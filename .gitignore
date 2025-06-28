@@ -15,24 +15,6 @@ export_credentials.cfg
 data_*/
 mono_crash.*.json
 
-# Temp / editor / backup files
-*.tmp
-*.log
-*.bak
-*.swp
-*.uid
-*.imported
-*.converted*
-*.material
-*.msh
-
-# Godot 3D model import artifacts
-*.glb.import
-*.fbx.import
-*.obj.import
-*.png.import
-*.jpg.import
-
 # IDE/editor folders (optional but common)
 .vscode/
 .idea/

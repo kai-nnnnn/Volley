@@ -1,0 +1,35 @@
+[gd_scene load_steps=7 format=3 uid="uid://cf6n34erpdufg"]
+
+[ext_resource type="Script" uid="uid://sw4q8fy4m8pw" path="res://players/player.gd" id="1_l271l"]
+[ext_resource type="Script" uid="uid://cq7muv4y38fgg" path="res://players/camera.gd" id="2_i6aj8"]
+[ext_resource type="Script" uid="uid://5r38vs3vq7di" path="res://players/player_camera.gd" id="2_wu7mp"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_wogvg"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_l271l"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_i6aj8"]
+radius = 0.3
+
+[node name="player" type="CharacterBody3D"]
+script = ExtResource("1_l271l")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_wogvg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_l271l")
+
+[node name="camera" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("2_wu7mp")
+
+[node name="camera_spring_arm" type="SpringArm3D" parent="camera"]
+shape = SubResource("SphereShape3D_i6aj8")
+spring_length = 6.0
+
+[node name="spring_position" type="Node3D" parent="camera/camera_spring_arm"]
+
+[node name="Camera3D" type="Camera3D" parent="camera" node_paths=PackedStringArray("spring_arm")]
+script = ExtResource("2_i6aj8")
+spring_arm = NodePath("../camera_spring_arm/spring_position")
