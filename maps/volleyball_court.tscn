@@ -1,7 +1,7 @@
-[gd_scene load_steps=51 format=4 uid="uid://ct1p5tgj1dxef"]
+[gd_scene load_steps=48 format=4 uid="uid://ct1p5tgj1dxef"]
 
-[ext_resource type="PackedScene" uid="uid://cbgkx3n36wuk5" path="res://volleyball.glb" id="1_nv36p"]
-[ext_resource type="PackedScene" uid="uid://fvuf6ufev5qx" path="res://chair.glb" id="2_tp3lc"]
+[ext_resource type="PackedScene" uid="uid://cbgkx3n36wuk5" path="res://assets/models/volleyball_court/volleyball.glb" id="1_nv36p"]
+[ext_resource type="PackedScene" uid="uid://fvuf6ufev5qx" path="res://assets/models/volleyball_court/chair.glb" id="2_tp3lc"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_nv36p"]
 points = PackedVector3Array(401.176, -292.085, 81.4517, -402.214, -359.459, 3.70421, -402.214, -292.085, 3.70421, 401.176, -359.459, 3.70421, -402.214, -359.459, 81.4517, -402.214, -292.085, 81.4517, 401.176, -292.085, 3.70421, 401.176, -359.459, 81.4517)
@@ -44,19 +44,6 @@ points = PackedVector3Array(-403.417, -415.09, 3.12324, 96.2617, -152.738, 3.123
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_6i01v"]
 points = PackedVector3Array(-401.941, -367.125, 93.2939, 125.063, 508.856, 255.544, 465.824, 460.152, 255.544, 125.063, 508.856, 109.532, 400.903, -367.125, -4.05624, -750.78, 346.624, 150.037, -401.941, -286.009, -4.05624, -750.78, 346.624, 255.544, 749.742, 346.624, 255.544, 400.903, -367.125, 93.2939, 749.742, 346.624, 150.037, -126.101, 508.856, 109.532, 400.903, -286.009, -4.05624, -466.861, 460.152, 255.544, -401.941, -367.125, -4.05624, 465.824, 460.152, 150.037, -466.861, 460.152, 150.037, -126.101, 508.856, 255.544, -718.319, 362.83, 150.037, 717.282, 362.83, 150.037, 636.057, 395.242, 247.387, -637.095, 395.242, 247.387, -491.097, 452.006, 150.037, 490.059, 452.006, 150.037, 717.282, 362.83, 255.544, -718.319, 362.83, 255.544, 490.059, 452.006, 247.387, -491.097, 452.006, 247.387, 636.057, 395.242, 150.037, -637.095, 395.242, 150.037)
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0i4tf"]
-sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
-ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
-
-[sub_resource type="Sky" id="Sky_hckvi"]
-sky_material = SubResource("ProceduralSkyMaterial_0i4tf")
-
-[sub_resource type="Environment" id="Environment_emonv"]
-background_mode = 2
-sky = SubResource("Sky_hckvi")
-tonemap_mode = 2
-glow_enabled = true
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_5vtj2"]
 points = PackedVector3Array(401.176, -292.085, 81.4517, -402.214, -359.459, 3.70421, -402.214, -292.085, 3.70421, 401.176, -359.459, 3.70421, -402.214, -359.459, 81.4517, -402.214, -292.085, 81.4517, 401.176, -292.085, 3.70421, 401.176, -359.459, 81.4517)
@@ -201,7 +188,7 @@ shadow_mesh = SubResource("ArrayMesh_fbx2v")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1548u"]
 
-[node name="Node3D" type="RigidBody3D"]
+[node name="Node3D" type="StaticBody3D"]
 
 [node name="CollisionShape3D39" type="CollisionShape3D" parent="."]
 transform = Transform3D(-1.74846e-09, 0.04, -8.88178e-18, 0, 8.88178e-18, 0.04, 0.04, 1.74846e-09, -3.88236e-25, 20, -0.05, -0.2)
@@ -258,9 +245,6 @@ shape = SubResource("ConvexPolygonShape3D_ei48p")
 [node name="CollisionShape3D26" type="CollisionShape3D" parent="."]
 transform = Transform3D(-1.74846e-09, 0.04, -8.88178e-18, 0, 8.88178e-18, 0.04, 0.04, 1.74846e-09, -3.88236e-25, 20, -0.05, -0.2)
 shape = SubResource("ConvexPolygonShape3D_6i01v")
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_emonv")
 
 [node name="CollisionShape3D25" type="CollisionShape3D" parent="."]
 transform = Transform3D(-5.58551e-06, -0.04, 8.88178e-18, 0, 8.88178e-18, 0.04, -0.04, 5.58551e-06, -1.24023e-21, -20, -0.05, -0.2)
@@ -333,10 +317,6 @@ shape = SubResource("ConvexPolygonShape3D_s53as")
 [node name="CollisionShape3D6" type="CollisionShape3D" parent="."]
 transform = Transform3D(-5.58551e-06, -0.04, 8.88178e-18, 0, 8.88178e-18, 0.04, -0.04, 5.58551e-06, -1.24023e-21, -20, -0.05, -0.2)
 shape = SubResource("ConvexPolygonShape3D_ifytu")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.82101, 0.570914, 0, -0.570914, 0.82101, 0, 7.04259, 0)
-shadow_enabled = true
 
 [node name="CollisionShape3D5" type="CollisionShape3D" parent="."]
 transform = Transform3D(0.15, 0, 0, 0, 2.5, 0, 0, 0, 0.15, -5.47933, 0, 0)
