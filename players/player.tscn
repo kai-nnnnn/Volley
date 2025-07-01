@@ -1,21 +1,28 @@
-[gd_scene load_steps=9 format=3 uid="uid://cf6n34erpdufg"]
+[gd_scene load_steps=10 format=3 uid="uid://cf6n34erpdufg"]
 
 [ext_resource type="Script" uid="uid://sw4q8fy4m8pw" path="res://players/player.gd" id="1_l271l"]
 [ext_resource type="Script" uid="uid://cq7muv4y38fgg" path="res://players/camera.gd" id="2_i6aj8"]
 [ext_resource type="Script" uid="uid://5r38vs3vq7di" path="res://players/player_camera.gd" id="2_wu7mp"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_wogvg"]
+radius = 0.4
+height = 1.8
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_l271l"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wu7mp"]
+radius = 0.4
+height = 1.8
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_i6aj8"]
 radius = 0.3
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wu7mp"]
-size = Vector3(1, 1, 1.2)
+size = Vector3(1, 1, 1.4)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_60y4r"]
 size = Vector3(1, 1.4, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g8xtg"]
+size = Vector3(1, 1.2, 1.2)
 
 [node name="player" type="CharacterBody3D"]
 collision_layer = 2
@@ -25,7 +32,7 @@ script = ExtResource("1_l271l")
 mesh = SubResource("CapsuleMesh_wogvg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("CapsuleShape3D_l271l")
+shape = SubResource("CapsuleShape3D_wu7mp")
 
 [node name="camera" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -44,7 +51,7 @@ spring_arm = NodePath("../camera_spring_arm/spring_position")
 [node name="camera_pivot" type="Node3D" parent="."]
 
 [node name="spike_area" type="Area3D" parent="camera_pivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, -0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.8, -0.2)
 collision_layer = 0
 collision_mask = 4
 
@@ -52,14 +59,24 @@ collision_mask = 4
 shape = SubResource("BoxShape3D_wu7mp")
 
 [node name="receive_area" type="Area3D" parent="camera_pivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.8)
 collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="camera_pivot/receive_area"]
 shape = SubResource("BoxShape3D_60y4r")
 
+[node name="front_set_area" type="Area3D" parent="camera_pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.4)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="camera_pivot/front_set_area"]
+shape = SubResource("BoxShape3D_g8xtg")
+
 [connection signal="body_entered" from="camera_pivot/spike_area" to="." method="_on_spike_area_body_entered"]
 [connection signal="body_exited" from="camera_pivot/spike_area" to="." method="_on_spike_area_body_exited"]
 [connection signal="body_entered" from="camera_pivot/receive_area" to="." method="_on_receive_area_body_entered"]
 [connection signal="body_exited" from="camera_pivot/receive_area" to="." method="_on_receive_area_body_exited"]
+[connection signal="body_entered" from="camera_pivot/front_set_area" to="." method="_on_front_set_area_body_entered"]
+[connection signal="body_exited" from="camera_pivot/front_set_area" to="." method="_on_front_set_area_body_exited"]

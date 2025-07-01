@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://csdo5xbcoiljj"]
 
-[ext_resource type="PackedScene" uid="uid://ct1p5tgj1dxef" path="res://maps/volleyball_court.tscn" id="1_nnsk1"]
+[ext_resource type="PackedScene" uid="uid://ct1p5tgj1dxef" path="res://maps/volleyball_court.tscn" id="1_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://cf6n34erpdufg" path="res://players/player.tscn" id="2_rwgxs"]
 
 [sub_resource type="Environment" id="Environment_nnsk1"]
@@ -15,8 +15,7 @@ transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 20, 0)
 
 [node name="map" type="Node3D" parent="."]
 
-[node name="volleyball_court" parent="map" instance=ExtResource("1_nnsk1")]
-collision_mask = 0
+[node name="volleyball_court" parent="map" instance=ExtResource("1_rwgxs")]
 
 [node name="player" parent="." instance=ExtResource("2_rwgxs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -8)

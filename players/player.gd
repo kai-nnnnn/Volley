@@ -4,13 +4,18 @@ extends CharacterBody3D
 @export var max_speed := 5.0
 @export var jump_velocity := 10.0
 @export var player_gravity := Vector3(0.0, -30.0, 0.0)
-@export var spike_velocity := 20.0
+@export var spike_velocity := 15.0
 @export var receive_velocity := 3.0
+@export var front_set_velocity := 2.5
+
+var mode = {"spike": [-0.2, spike_velocity], "receive": [3.5, receive_velocity], \
+	"front_set": [3.5, front_set_velocity]}
 
 @onready var cam := $camera
 @onready var ball_scene := preload("res://scenes/ball.tscn")
 @onready var in_spike_area := {}
 @onready var in_receive_area := {}
+@onready var in_front_set_area := {}
 
 
 func _process(_delta: float) -> void:
@@ -53,10 +58,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("spike_or_receive"):
 		if not is_on_floor():
 			for b in in_spike_area:
-				spike(b)
+				perform_hit(b, "spike")
 		else:
 			for b in in_receive_area:
-				receive(b)		
+				perform_hit(b, "receive")		
+	elif event.is_action_pressed("front_set"):
+		for b in in_front_set_area:
+			perform_hit(b, "front_set")
+
 
 func _on_spike_area_body_entered(body:Node3D) -> void:
 	if body.is_in_group("balls"):
@@ -79,17 +88,30 @@ func _on_receive_area_body_exited(body:Node3D) -> void:
 	if body.is_in_group("balls") and in_receive_area.has(body):
 		in_receive_area.erase(body)
 
+
+func _on_front_set_area_body_entered(body:Node3D) -> void:
+	if body.is_in_group("balls"):
+		print("front set in")
+		in_front_set_area[body] = 0
+
+
+
+func _on_front_set_area_body_exited(body:Node3D) -> void:
+	if body.is_in_group("balls") and in_front_set_area.has(body):
+		in_front_set_area.erase(body)
+
 		
-func spike(body:Node3D) -> void:
-	var cam_forward = -cam.global_transform.basis.z.normalized()
-	cam_forward.y = -0.1
-	cam_forward.normalized()
-	body.linear_velocity = cam_forward * spike_velocity
+func perform_hit(body:Node3D, mode_name:String) -> void:
+	if not body.is_in_group("balls"):
+		print("body is not ball")
+		return
 
+	if mode_name not in mode:
+		print("mode_name invalid")
+		return
 
-func receive(body:Node3D) -> void:
-	print("receive")
 	var cam_forward = -cam.global_transform.basis.z.normalized()
-	cam_forward.y = 3.5
+	cam_forward.y = mode[mode_name][0]
 	cam_forward.normalized()
-	body.linear_velocity = cam_forward * receive_velocity
+	body.linear_velocity = cam_forward * mode[mode_name][1]
+
