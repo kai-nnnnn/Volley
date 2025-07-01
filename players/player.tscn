@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://cf6n34erpdufg"]
+[gd_scene load_steps=9 format=3 uid="uid://cf6n34erpdufg"]
 
 [ext_resource type="Script" uid="uid://sw4q8fy4m8pw" path="res://players/player.gd" id="1_l271l"]
 [ext_resource type="Script" uid="uid://cq7muv4y38fgg" path="res://players/camera.gd" id="2_i6aj8"]
@@ -11,7 +11,14 @@
 [sub_resource type="SphereShape3D" id="SphereShape3D_i6aj8"]
 radius = 0.3
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_wu7mp"]
+size = Vector3(1, 1, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_60y4r"]
+size = Vector3(1, 1.4, 1)
+
 [node name="player" type="CharacterBody3D"]
+collision_layer = 2
 script = ExtResource("1_l271l")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
@@ -33,3 +40,26 @@ spring_length = 6.0
 [node name="Camera3D" type="Camera3D" parent="camera" node_paths=PackedStringArray("spring_arm")]
 script = ExtResource("2_i6aj8")
 spring_arm = NodePath("../camera_spring_arm/spring_position")
+
+[node name="camera_pivot" type="Node3D" parent="."]
+
+[node name="spike_area" type="Area3D" parent="camera_pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, -0.2)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="camera_pivot/spike_area"]
+shape = SubResource("BoxShape3D_wu7mp")
+
+[node name="receive_area" type="Area3D" parent="camera_pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.8)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="camera_pivot/receive_area"]
+shape = SubResource("BoxShape3D_60y4r")
+
+[connection signal="body_entered" from="camera_pivot/spike_area" to="." method="_on_spike_area_body_entered"]
+[connection signal="body_exited" from="camera_pivot/spike_area" to="." method="_on_spike_area_body_exited"]
+[connection signal="body_entered" from="camera_pivot/receive_area" to="." method="_on_receive_area_body_entered"]
+[connection signal="body_exited" from="camera_pivot/receive_area" to="." method="_on_receive_area_body_exited"]

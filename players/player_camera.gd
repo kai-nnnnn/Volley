@@ -1,8 +1,8 @@
 extends Node3D
 
 @export var mouse_sensitivity := 0.001
-@export_range(-90.0, 0.0, 0.1, "radians_as_degrees") var min_vert_angle := -PI/4
-@export_range(0.0, 90.0, 0.1, "radians_as_degrees") var max_vert_angle := PI/4
+@export_range(-90.0, 0.0, 0.1, "radians_as_degrees") var min_vert_angle := -PI/2
+@export_range(0.0, 90.0, 0.1, "radians_as_degrees") var max_vert_angle := PI/2
 
 @onready var spring_arm := $camera_spring_arm
 
