@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://47xb1fk5raee"]
 
-[ext_resource type="Script" uid="uid://4r2n0wtpalpi" path="res://scripts/ball.gd" id="1_7s4qf"]
+[ext_resource type="Script" uid="uid://bbraoqqhrxwx6" path="res://balls/ball.gd" id="1_ht7ih"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_7s4qf"]
 friction = 0.3
@@ -21,7 +21,7 @@ radius = 0.3
 collision_layer = 4
 mass = 0.3
 physics_material_override = SubResource("PhysicsMaterial_7s4qf")
-script = ExtResource("1_7s4qf")
+script = ExtResource("1_ht7ih")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_x8fbi")

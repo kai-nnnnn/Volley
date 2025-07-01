@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 @export var acceleration := 30.0
-@export var max_speed := 5.0
+@export var max_speed := 6.0
 @export var jump_velocity := 10.0
 @export var player_gravity := Vector3(0.0, -30.0, 0.0)
 @export var spike_velocity := 15.0
@@ -12,7 +12,7 @@ var mode = {"spike": [-0.2, spike_velocity], "receive": [3.5, receive_velocity],
 	"front_set": [3.5, front_set_velocity]}
 
 @onready var cam := $camera
-@onready var ball_scene := preload("res://scenes/ball.tscn")
+@onready var ball_scene := preload("res://balls/ball.tscn")
 @onready var in_spike_area := {}
 @onready var in_receive_area := {}
 @onready var in_front_set_area := {}
@@ -25,6 +25,8 @@ func _process(_delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity += player_gravity * delta
+		move_and_slide()
+		return
 	
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jump_velocity
@@ -93,7 +95,6 @@ func _on_front_set_area_body_entered(body:Node3D) -> void:
 	if body.is_in_group("balls"):
 		print("front set in")
 		in_front_set_area[body] = 0
-
 
 
 func _on_front_set_area_body_exited(body:Node3D) -> void:

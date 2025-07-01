@@ -78,3 +78,7 @@ front_set={
 3d_physics/layer_1="env"
 3d_physics/layer_2="player"
 3d_physics/layer_3="ball"
+
+[physics]
+
+3d/default_gravity=9.8
