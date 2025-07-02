@@ -1,6 +1,8 @@
 extends RigidBody3D
 
 @onready var has_hit_ground = false
+@onready var has_hit = true
+@onready var hits = 0
 
 
 # Called when the node enters the scene tree for the first time.

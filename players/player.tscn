@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cf6n34erpdufg"]
+[gd_scene load_steps=11 format=3 uid="uid://cf6n34erpdufg"]
 
 [ext_resource type="Script" uid="uid://sw4q8fy4m8pw" path="res://players/player.gd" id="1_l271l"]
 [ext_resource type="Script" uid="uid://cq7muv4y38fgg" path="res://players/camera.gd" id="2_i6aj8"]
@@ -24,6 +24,9 @@ size = Vector3(1, 1.4, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_g8xtg"]
 size = Vector3(1, 1.2, 1.2)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_k00sm"]
+size = Vector3(1.2, 1, 1.6)
+
 [node name="player" type="CharacterBody3D"]
 collision_layer = 2
 script = ExtResource("1_l271l")
@@ -45,6 +48,7 @@ spring_length = 6.0
 [node name="spring_position" type="Node3D" parent="camera/camera_spring_arm"]
 
 [node name="Camera3D" type="Camera3D" parent="camera" node_paths=PackedStringArray("spring_arm")]
+fov = 90.0
 script = ExtResource("2_i6aj8")
 spring_arm = NodePath("../camera_spring_arm/spring_position")
 
@@ -74,9 +78,19 @@ collision_mask = 4
 [node name="CollisionShape3D" type="CollisionShape3D" parent="camera_pivot/front_set_area"]
 shape = SubResource("BoxShape3D_g8xtg")
 
+[node name="dive_area" type="Area3D" parent="camera_pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -0.4)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="camera_pivot/dive_area"]
+shape = SubResource("BoxShape3D_k00sm")
+
 [connection signal="body_entered" from="camera_pivot/spike_area" to="." method="_on_spike_area_body_entered"]
 [connection signal="body_exited" from="camera_pivot/spike_area" to="." method="_on_spike_area_body_exited"]
 [connection signal="body_entered" from="camera_pivot/receive_area" to="." method="_on_receive_area_body_entered"]
 [connection signal="body_exited" from="camera_pivot/receive_area" to="." method="_on_receive_area_body_exited"]
 [connection signal="body_entered" from="camera_pivot/front_set_area" to="." method="_on_front_set_area_body_entered"]
 [connection signal="body_exited" from="camera_pivot/front_set_area" to="." method="_on_front_set_area_body_exited"]
+[connection signal="body_entered" from="camera_pivot/dive_area" to="." method="_on_dive_area_body_entered"]
+[connection signal="body_exited" from="camera_pivot/dive_area" to="." method="_on_dive_area_body_exited"]
