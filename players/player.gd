@@ -13,6 +13,12 @@ enum player_state {
 	DIVING,
 }
 
+enum hand {
+	LEFT,
+	RIGHT
+}
+
+@export var dominant_hand = hand.RIGHT
 @export var acceleration := 30.0
 @export var max_speed := 6.0
 @export var dive_speed := 12.0
@@ -54,6 +60,15 @@ func set_state(new_state: player_state) -> void:
 
 func is_state(s: player_state) -> bool:
 	return state == s
+
+
+func _ready() -> void:
+	match dominant_hand:
+		hand.LEFT:
+			$camera_pivot/spike_area.position.x = -0.5
+		
+		hand.RIGHT:
+			$camera_pivot/spike_area.position.x = 0.5
 
 
 func _process(_delta: float) -> void:
