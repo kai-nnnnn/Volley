@@ -18,3 +18,14 @@ mono_crash.*.json
 # IDE/editor folders (optional but common)
 .vscode/
 .idea/
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
