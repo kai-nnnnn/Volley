@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 var area_debug = false
-var debug = true
+var debug = false
 
 enum player_state {
 	IDLE,
@@ -49,7 +49,7 @@ enum player_state {
 func set_state(new_state: player_state) -> void:
 	if state != new_state:
 		state = new_state
-		if debug: print(new_state)
+		DebugPrint.dprint(debug, ["state: ", new_state])
 
 
 func is_state(s: player_state) -> bool:
@@ -151,7 +151,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
 	if mode_name not in mode:
-		print("mode_name invalid")
+		DebugPrint.dprint(debug, ["mode_name invalid"])
 		return
 
 	set_state(mode_name_to_state[mode_name])
@@ -163,11 +163,11 @@ func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
 
 	for b in bodies.keys():
 		if not b.is_in_group("balls"):
-			print(b, " is not ball")
+			DebugPrint.dprint(debug, [b, " is not ball"])
 			return
 		
 		if id in b.hitters:
-			print("in hit cooldown")
+			DebugPrint.dprint(debug, ["in hit cooldown"])
 			continue
 		else:
 			b.reg_hitter(id)
@@ -176,14 +176,13 @@ func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
 	if set_idle:
 		can_hit = false
 		await get_tree().create_timer(hit_cooldown).timeout
-		print("NAH")
 		can_hit = true
 		set_state(player_state.IDLE)
 			
 
 func _on_spike_area_body_entered(body:Node3D) -> void:
 	if body.is_in_group("balls"):
-		if area_debug: print("spike in")
+		DebugPrint.dprint(area_debug, ["ball enter spike area"])
 		in_spike_area[body] = 0
 		
 
@@ -194,7 +193,7 @@ func _on_spike_area_body_exited(body:Node3D) -> void:
 
 func _on_receive_area_body_entered(body:Node3D) -> void:
 	if body.is_in_group("balls"):
-		if area_debug: print("receive in")
+		DebugPrint.dprint(area_debug, ["ball enter receive area"])
 		in_receive_area[body] = 0
 
 
@@ -205,7 +204,7 @@ func _on_receive_area_body_exited(body:Node3D) -> void:
 
 func _on_front_set_area_body_entered(body:Node3D) -> void:
 	if body.is_in_group("balls"):
-		if area_debug: print("front set in")
+		DebugPrint.dprint(area_debug, ["ball enter front set area"])
 		in_front_set_area[body] = 0
 
 
@@ -216,7 +215,7 @@ func _on_front_set_area_body_exited(body:Node3D) -> void:
 		
 func _on_dive_area_body_entered(body: Node3D) -> void:
 	if body.is_in_group("balls"):
-		if area_debug: print("dive in")
+		DebugPrint.dprint(area_debug, ["ball enter dive area"])
 		in_dive_area[body] = 0
 
 
