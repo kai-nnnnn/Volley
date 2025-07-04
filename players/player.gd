@@ -30,8 +30,10 @@ enum hand {
 @export var front_set_velocity := 8.0
 @export var dive_velocity := 10.0
 
+@export var crush_delta := -0.15
+
 @onready var state := player_state.IDLE
-@onready var mode = {"spike": [-0.2, spike_velocity], "receive": [3.5, receive_velocity], \
+@onready var mode = {"spike": [-0.25, spike_velocity], "receive": [3.5, receive_velocity], \
 	"front_set": [3, front_set_velocity], "dive": [999, dive_velocity]}
 @onready var mode_name_to_state = {
 	"spike": player_state.SPIKING,
@@ -44,6 +46,7 @@ enum hand {
 @onready var dive_direction : Vector3
 @onready var can_hit = true
 @onready var hit_cooldown = 0.1
+
 @onready var cam := $camera
 @onready var ball_scene := preload("res://balls/ball.tscn")
 @onready var in_spike_area := {}
@@ -172,9 +175,19 @@ func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
 	set_state(mode_name_to_state[mode_name])
 
 	var id = get_instance_id()
-	var cam_forward = -cam.global_transform.basis.z.normalized()
-	cam_forward.y = mode[mode_name][0]
-	cam_forward = cam_forward.normalized()
+	var hit_angle = -cam.global_transform.basis.z.normalized()
+	hit_angle.y = mode[mode_name][0]
+	match state:
+		player_state.SPIKING:
+			if Input.is_action_pressed("move_forward"):
+				hit_angle.y += crush_delta
+			elif Input.is_action_pressed("move_back"):
+				hit_angle.y -= crush_delta
+		
+		_:
+			pass
+
+	hit_angle = hit_angle.normalized()
 
 	for b in bodies.keys():
 		if not b.is_in_group("balls"):
@@ -186,7 +199,7 @@ func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
 			continue
 		else:
 			b.reg_hitter(id)
-		b.linear_velocity = cam_forward * mode[mode_name][1]
+		b.linear_velocity = hit_angle * mode[mode_name][1]
 	
 	if set_idle:
 		can_hit = false

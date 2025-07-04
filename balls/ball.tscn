@@ -11,11 +11,11 @@ albedo_color = Color(0.45475, 0.743954, 1, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_x8fbi"]
 material = SubResource("StandardMaterial3D_cbx31")
-radius = 0.3
-height = 0.6
+radius = 0.25
+height = 0.5
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_41u45"]
-radius = 0.3
+radius = 0.25
 
 [node name="ball" type="RigidBody3D" groups=["balls"]]
 collision_layer = 4

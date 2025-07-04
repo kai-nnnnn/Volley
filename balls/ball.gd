@@ -22,6 +22,8 @@ func _physics_process(delta: float) -> void:
 
 	for node in get_colliding_bodies():
 		if node.is_in_group("floor"):
+			if global_position.y > 0.5:
+				return
 			has_hit_ground = true
 			if global_position.z > 0:
 				print("positive")
