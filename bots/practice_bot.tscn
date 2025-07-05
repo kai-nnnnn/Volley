@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://lock4p85eucs"]
+[gd_scene load_steps=8 format=3 uid="uid://lock4p85eucs"]
 
 [ext_resource type="Script" uid="uid://y7jx7vifrs2c" path="res://bots/practice_bot.gd" id="1_k38md"]
 
@@ -14,6 +14,15 @@ height = 1.8
 radius = 0.4
 height = 1.8
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_k38md"]
+size = Vector3(1, 1, 1.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_k5uwn"]
+size = Vector3(1, 1.2, 1.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_k5uwn"]
+size = Vector3(1, 1.2, 1.2)
+
 [node name="practice_bot" type="CharacterBody3D"]
 collision_layer = 0
 script = ExtResource("1_k38md")
@@ -25,3 +34,25 @@ mesh = SubResource("CapsuleMesh_a7ply")
 shape = SubResource("CapsuleShape3D_ivf02")
 
 [node name="modes" type="Node" parent="."]
+
+[node name="pivot" type="Node3D" parent="."]
+
+[node name="spike_area" type="Area3D" parent="pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.8, -0.2)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="pivot/spike_area"]
+shape = SubResource("BoxShape3D_k38md")
+
+[node name="front_set_area" type="Area3D" parent="pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.4)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="pivot/front_set_area"]
+shape = SubResource("BoxShape3D_k5uwn")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="pivot/front_set_area"]
+visible = false
+mesh = SubResource("BoxMesh_k5uwn")

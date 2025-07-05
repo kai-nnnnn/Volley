@@ -1,5 +1,7 @@
 extends RigidBody3D
 
+signal ball_hit_ground
+
 @onready var hit_cooldown = 0.1
 @onready var has_hit_ground = false
 @onready var hitters = {}
@@ -25,6 +27,7 @@ func _physics_process(delta: float) -> void:
 			if global_position.y > 0.5:
 				return
 			has_hit_ground = true
+			emit_signal("ball_hit_ground")
 			if global_position.z > 0:
 				print("positive")
 			else:
