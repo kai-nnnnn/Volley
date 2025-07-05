@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://lock4p85eucs"]
+
+[ext_resource type="Script" uid="uid://y7jx7vifrs2c" path="res://bots/practice_bot.gd" id="1_k38md"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_00q0p"]
+albedo_color = Color(1, 0.335972, 0.265429, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_a7ply"]
+material = SubResource("StandardMaterial3D_00q0p")
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ivf02"]
+radius = 0.4
+height = 1.8
+
+[node name="practice_bot" type="CharacterBody3D"]
+collision_layer = 0
+script = ExtResource("1_k38md")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_a7ply")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_ivf02")
+
+[node name="modes" type="Node" parent="."]

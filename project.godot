@@ -18,11 +18,6 @@ config/icon="res://icon.svg"
 [autoload]
 
 DebugPrint="*res://scripts/debug_print.gd"
-Console="*res://addons/console/console.gd"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/console/plugin.cfg")
 
 [input]
 
