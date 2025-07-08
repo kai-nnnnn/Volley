@@ -2,7 +2,7 @@ extends RigidBody3D
 
 signal ball_hit_ground
 
-@onready var hit_cooldown = 0.1
+@onready var hit_cooldown = 0.4
 @onready var has_hit_ground = false
 @onready var hitters = {}
 @onready var hits = 0

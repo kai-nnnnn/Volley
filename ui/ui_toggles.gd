@@ -4,6 +4,7 @@ extends CanvasLayer
 func _ready() -> void:
 	for child_ui in get_children():
 		child_ui.visible = false
+	$status_ui.visible = true
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

@@ -41,11 +41,12 @@ enum hand {
 	"front_set": player_state.FRONT_SETTING,
 	"dive": player_state.DIVING
 }
+@onready var changable_state = [player_state.IDLE, player_state.RUNNING, player_state.JUMPING]
 
 @onready var doing_dive = false
 @onready var dive_direction : Vector3
 @onready var can_hit = true
-@onready var hit_cooldown = 0.1
+@onready var hit_cooldown = 0.4
 
 @onready var cam := $camera
 @onready var ball_scene := preload("res://balls/ball.tscn")
@@ -55,10 +56,22 @@ enum hand {
 @onready var in_dive_area := {}
 
 
-func set_state(new_state: player_state) -> void:
-	if state != new_state:
+func reset_state() -> void:
+	if not is_on_floor():
+		state = player_state.JUMPING
+	elif velocity:
+		state = player_state.RUNNING
+	else:
+		state = player_state.IDLE
+
+
+func set_state(new_state: player_state, cooldown=0) -> void:
+	if state != new_state and state in changable_state:
 		state = new_state
-		DebugPrint.dprint(debug, ["state: ", new_state])
+		DebugPrint.dprint(debug, ["state: ", new_state, " cooldown: ", cooldown])
+		if cooldown:
+			await get_tree().create_timer(cooldown).timeout
+			reset_state()
 
 
 func is_state(s: player_state) -> bool:
@@ -76,6 +89,17 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	$camera_pivot.rotation.y = cam.rotation.y
+	
+	match state:
+		player_state.SPIKING:
+			perform_hit(in_spike_area, "spike")
+		player_state.RECEIVING:
+			perform_hit(in_receive_area, "receive")
+		player_state.FRONT_SETTING:
+			perform_hit(in_front_set_area, "front_set")
+		player_state.DIVING:
+			perform_hit(in_dive_area, "dive", false)
+			
 
 
 func _physics_process(delta: float) -> void:
@@ -113,7 +137,7 @@ func _physics_process(delta: float) -> void:
 		
 		player_state.JUMPING:
 			if is_on_floor():
-				if velocity.length():
+				if velocity:
 					set_state(player_state.RUNNING)
 				else:
 					set_state(player_state.IDLE)
@@ -138,8 +162,7 @@ func dive(_dive_dir: Vector3):
 	var dive_cooldown = 0.4
 	await get_tree().create_timer(dive_cooldown).timeout
 
-	set_state(player_state.IDLE)
-
+	reset_state()
 
 func spawn_ball():
 	var ball = ball_scene.instantiate()
@@ -154,17 +177,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	match state:
 		player_state.IDLE, player_state.RUNNING:
 			if event.is_action_pressed("spike_or_receive"):
-				perform_hit(in_receive_area, "receive")
+				set_state(player_state.RECEIVING, hit_cooldown)
 			elif event.is_action_pressed("front_set"):
-				perform_hit(in_front_set_area, "front_set")
-		
+				set_state(player_state.FRONT_SETTING, hit_cooldown)	
 		player_state.JUMPING:
 			if event.is_action_pressed("spike_or_receive"):
-				perform_hit(in_spike_area, "spike")
-
-		player_state.DIVING:
-			if in_dive_area:
-				perform_hit(in_dive_area, "dive", false)
+				set_state(player_state.SPIKING, hit_cooldown)
+			
+			# i will keep jump set off because it's very powerful
+			# elif event.is_action_pressed("front_set"):
+				# set_state(player_state.FRONT_SETTING, hit_cooldown)
 
 
 func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
@@ -172,7 +194,11 @@ func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
 		DebugPrint.dprint(debug, ["mode_name invalid"])
 		return
 
-	set_state(mode_name_to_state[mode_name])
+	if not bodies:
+		# DebugPrint.dpring(debug, ["no balls"])
+		return
+
+	# set_state(mode_name_to_state[mode_name])
 
 	var id = get_instance_id()
 	var hit_angle = -cam.global_transform.basis.z.normalized()

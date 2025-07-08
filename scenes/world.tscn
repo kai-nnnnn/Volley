@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://csdo5xbcoiljj"]
+[gd_scene load_steps=7 format=3 uid="uid://csdo5xbcoiljj"]
 
 [ext_resource type="PackedScene" uid="uid://ct1p5tgj1dxef" path="res://maps/volleyball_court.tscn" id="1_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://cf6n34erpdufg" path="res://players/player.tscn" id="2_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://digbdii2lw1t5" path="res://ui/bot_ui.tscn" id="3_4wyf3"]
 [ext_resource type="Script" uid="uid://dsxqgga8xgugc" path="res://ui/ui_toggles.gd" id="3_k0juu"]
+[ext_resource type="PackedScene" uid="uid://deqlkahx0bch5" path="res://ui/status_ui.tscn" id="5_71j4m"]
 
 [sub_resource type="Environment" id="Environment_nnsk1"]
 
@@ -26,3 +27,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -8)
 script = ExtResource("3_k0juu")
 
 [node name="bot_ui" parent="CanvasLayer" instance=ExtResource("3_4wyf3")]
+
+[node name="status_ui" parent="CanvasLayer" instance=ExtResource("5_71j4m")]
