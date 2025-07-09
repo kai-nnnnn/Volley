@@ -11,6 +11,7 @@ enum player_state {
 	RECEIVING,
 	FRONT_SETTING,
 	DIVING,
+	BLOCKING
 }
 
 enum hand {
@@ -22,18 +23,19 @@ enum hand {
 
 @export var crush_delta := -0.15
 
+@onready var id = get_instance_id()
 @onready var state := player_state.IDLE
 @onready var mode_name_to_state = {
 	"spike": player_state.SPIKING,
 	"receive": player_state.RECEIVING,
 	"front_set": player_state.FRONT_SETTING,
-	"dive": player_state.DIVING
+	"dive": player_state.DIVING,
+	"block": player_state.BLOCKING
 }
 @onready var changable_state = [player_state.IDLE, player_state.RUNNING, player_state.JUMPING]
 
 @onready var doing_dive = false
 @onready var dive_direction : Vector3
-@onready var can_hit = true
 
 @onready var cam := $camera
 @onready var ball_scene := preload("res://balls/ball.tscn")
@@ -41,6 +43,7 @@ enum hand {
 @onready var in_receive_area := {}
 @onready var in_front_set_area := {}
 @onready var in_dive_area := {}
+@onready var in_block_area := {}
 
 
 func reset_state() -> void:
@@ -87,6 +90,8 @@ func _process(_delta: float) -> void:
 			perform_hit(in_front_set_area, "front_set")
 		player_state.DIVING:
 			perform_hit(in_dive_area, "dive", false)
+		player_state.BLOCKING:
+			perform_block(in_block_area)
 			
 
 
@@ -139,7 +144,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
-func dive(_dive_dir: Vector3):
+func dive(_dive_dir: Vector3) -> void:
 	doing_dive = true
 	dive_direction = _dive_dir
 
@@ -150,7 +155,18 @@ func dive(_dive_dir: Vector3):
 	var dive_cooldown = 0.4
 	await get_tree().create_timer(dive_cooldown).timeout
 
+	# state goes from dive -> normal
 	reset_state()
+
+
+func block() -> void:
+	$camera_pivot/block_area.monitoring = true
+	while not is_on_floor():
+		await get_tree().process_frame
+	$camera_pivot/block_area.monitoring = false
+	# state goes from block -> normal
+	reset_state()
+
 
 func spawn_ball():
 	var ball = ball_scene.instantiate()
@@ -171,6 +187,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		player_state.JUMPING:
 			if event.is_action_pressed("spike_or_receive"):
 				set_state(player_state.SPIKING, VBConst.hit_cooldown)
+			elif event.is_action_pressed("block"):
+				set_state(player_state.BLOCKING)
+				block()
 			
 			# i will keep jump set off because it's very powerful
 			# elif event.is_action_pressed("front_set"):
@@ -188,7 +207,6 @@ func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
 
 	# set_state(mode_name_to_state[mode_name])
 
-	var id = get_instance_id()
 	var hit_angle = -$camera_pivot.global_transform.basis.z.normalized()
 	hit_angle.y = VBConst.mode[mode_name][0]
 	match state:
@@ -216,11 +234,45 @@ func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
 		b.linear_velocity = hit_angle * VBConst.mode[mode_name][1]
 	
 	if set_idle:
-		can_hit = false
 		await get_tree().create_timer(VBConst.hit_cooldown).timeout
-		can_hit = true
 		set_state(player_state.IDLE)
-			
+
+
+func perform_block(bodies: Dictionary) -> void:
+	if not bodies:
+		return
+
+	const bounce_factor = 0.5
+	var hit_angle = -$camera_pivot.global_transform.basis.z.normalized()
+	hit_angle.y += 0.1 + randf() * 0.1
+	hit_angle = hit_angle.normalized()
+
+	for b in bodies.keys():
+		if not b.is_in_group("balls"):
+			DebugPrint.dprint(debug, [b, " is not ball"])
+			return
+		
+		if id in b.hitters:
+			DebugPrint.dprint(debug, ["in hit cooldown"])
+			continue
+		else:
+			b.reg_hitter(id)
+		
+		var bpos = b.global_position; var ppos = global_position
+		bpos.y = 0; ppos.y = 0
+		var horizontal_distance = bpos.distance_to(ppos)
+		var fail_chance = clamp(horizontal_distance / VBConst.max_block_range, 0.0, 1.0)
+		fail_chance = pow(fail_chance, 1.7)
+
+		DebugPrint.dprint(true, ["Block dist: ", horizontal_distance, " Fail chance: ", fail_chance])
+		if randf() < fail_chance:
+			var slow_factor = clamp(fail_chance, 0.3, 1.0)
+			b.linear_velocity *= slow_factor
+			b.linear_velocity.y += (1 - slow_factor) * 3
+			DebugPrint.dprint(debug, ["FAILED BLOCK"])
+		else:
+			DebugPrint.dprint(debug, ["SUCCESS BLOCK"])
+			b.linear_velocity = b.linear_velocity.bounce(hit_angle) * bounce_factor
 
 func _on_spike_area_body_entered(body:Node3D) -> void:
 	if body.is_in_group("balls"):
@@ -264,3 +316,14 @@ func _on_dive_area_body_entered(body: Node3D) -> void:
 func _on_dive_area_body_exited(body: Node3D) -> void:
 	if body.is_in_group("balls") and in_dive_area.has(body):
 		in_dive_area.erase(body)
+
+
+func _on_block_area_body_entered(body: Node3D) -> void:
+	if body.is_in_group("balls"):
+		DebugPrint.dprint(area_debug, ["ball enter block area"])
+		in_block_area[body] = 0
+
+
+func _on_block_area_body_exited(body: Node3D) -> void:
+	if body.is_in_group("balls") and in_block_area.has(body):
+		in_block_area.erase(body)

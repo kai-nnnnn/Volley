@@ -2,6 +2,18 @@ extends Node
 
 class_name VBConst
 
+
+enum player_state {
+	IDLE,
+	RUNNING,
+	JUMPING,
+	SPIKING,
+	RECEIVING,
+	FRONT_SETTING,
+	DIVING,
+	BLOCKING
+}
+
 const acceleration := 30.0
 const max_speed := 6.0
 const dive_speed := 12.0
@@ -12,6 +24,7 @@ const spike_velocity := 14.0
 const receive_velocity := 10.0
 const front_set_velocity := 8.5
 const dive_velocity := 10.0
+const max_block_range = 0.6 # approx half block area + ball radius; pratically impossible
 
 const mode = {
 	"spike": [-0.4, spike_velocity], 
