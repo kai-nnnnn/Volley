@@ -2,7 +2,6 @@ extends RigidBody3D
 
 signal ball_hit_ground
 
-@onready var hit_cooldown = 0.4
 @onready var has_hit_ground = false
 @onready var hitters = {}
 @onready var hits = 0
@@ -36,5 +35,5 @@ func _physics_process(delta: float) -> void:
 
 func reg_hitter(hitter: int) -> void:
 	hitters[hitter] = true
-	await get_tree().create_timer(hit_cooldown).timeout
+	await get_tree().create_timer(VBConst.hit_cooldown).timeout
 	hitters.erase(hitter)

@@ -19,22 +19,10 @@ enum hand {
 }
 
 @export var dominant_hand = hand.RIGHT
-@export var acceleration := 30.0
-@export var max_speed := 6.0
-@export var dive_speed := 12.0
-@export var dive_decceleration := 45.0
-@export var jump_speed := 10.0
-@export var player_gravity := Vector3(0.0, -30.0, 0.0)
-@export var spike_velocity := 14.0
-@export var receive_velocity := 10.0
-@export var front_set_velocity := 8.5
-@export var dive_velocity := 10.0
 
 @export var crush_delta := -0.15
 
 @onready var state := player_state.IDLE
-@onready var mode = {"spike": [-0.4, spike_velocity], "receive": [3.5, receive_velocity], \
-	"front_set": [2.8, front_set_velocity], "dive": [999, dive_velocity]}
 @onready var mode_name_to_state = {
 	"spike": player_state.SPIKING,
 	"receive": player_state.RECEIVING,
@@ -46,7 +34,6 @@ enum hand {
 @onready var doing_dive = false
 @onready var dive_direction : Vector3
 @onready var can_hit = true
-@onready var hit_cooldown = 0.4
 
 @onready var cam := $camera
 @onready var ball_scene := preload("res://balls/ball.tscn")
@@ -65,7 +52,7 @@ func reset_state() -> void:
 		state = player_state.IDLE
 
 
-func set_state(new_state: player_state, cooldown=0) -> void:
+func set_state(new_state: player_state, cooldown=0.0) -> void:
 	if state != new_state and state in changable_state:
 		state = new_state
 		DebugPrint.dprint(debug, ["state: ", new_state, " cooldown: ", cooldown])
@@ -107,7 +94,7 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		if is_state(player_state.IDLE):
 			set_state(player_state.JUMPING)
-		velocity += player_gravity * delta
+		velocity += VBConst.gravity * delta
 		move_and_slide()
 		return
 	
@@ -117,24 +104,24 @@ func _physics_process(delta: float) -> void:
 	match state:
 		player_state.IDLE, player_state.RUNNING:
 			if Input.is_action_just_pressed("jump"):
-				velocity.y = jump_speed
+				velocity.y = VBConst.jump_speed
 				set_state(player_state.JUMPING)
 			elif Input.is_action_just_pressed("dive"):
 				dive(direction)
 				set_state(player_state.DIVING)
 			elif direction:
 				set_state(player_state.RUNNING)
-				velocity = velocity.move_toward(direction * max_speed, delta * acceleration)
+				velocity = velocity.move_toward(direction * VBConst.max_speed, delta * VBConst.acceleration)
 			else:
 				set_state(player_state.IDLE)
-				velocity = velocity.move_toward(Vector3.ZERO, delta * acceleration)
+				velocity = velocity.move_toward(Vector3.ZERO, delta * VBConst.acceleration)
 		
 		player_state.DIVING:
 			if doing_dive:
-				velocity = dive_direction * dive_speed
+				velocity = dive_direction * VBConst.dive_speed
 				velocity.y = 0
 			else:
-				velocity = velocity.move_toward(Vector3.ZERO, delta * acceleration)
+				velocity = velocity.move_toward(Vector3.ZERO, delta * VBConst.acceleration)
 		
 		player_state.JUMPING:
 			if is_on_floor():
@@ -145,9 +132,9 @@ func _physics_process(delta: float) -> void:
 		
 		_:
 			if direction:
-				velocity = velocity.move_toward(direction * max_speed, delta * acceleration)
+				velocity = velocity.move_toward(direction * VBConst.max_speed, delta * VBConst.acceleration)
 			else:
-				velocity = velocity.move_toward(Vector3.ZERO, delta * acceleration)
+				velocity = velocity.move_toward(Vector3.ZERO, delta * VBConst.acceleration)
 	
 	move_and_slide()
 
@@ -178,12 +165,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	match state:
 		player_state.IDLE, player_state.RUNNING:
 			if event.is_action_pressed("spike_or_receive"):
-				set_state(player_state.RECEIVING, hit_cooldown)
+				set_state(player_state.RECEIVING, VBConst.hit_cooldown)
 			elif event.is_action_pressed("front_set"):
-				set_state(player_state.FRONT_SETTING, hit_cooldown)	
+				set_state(player_state.FRONT_SETTING, VBConst.hit_cooldown)	
 		player_state.JUMPING:
 			if event.is_action_pressed("spike_or_receive"):
-				set_state(player_state.SPIKING, hit_cooldown)
+				set_state(player_state.SPIKING, VBConst.hit_cooldown)
 			
 			# i will keep jump set off because it's very powerful
 			# elif event.is_action_pressed("front_set"):
@@ -191,7 +178,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
-	if mode_name not in mode:
+	if mode_name not in VBConst.mode:
 		DebugPrint.dprint(debug, ["mode_name invalid"])
 		return
 
@@ -203,8 +190,7 @@ func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
 
 	var id = get_instance_id()
 	var hit_angle = -$camera_pivot.global_transform.basis.z.normalized()
-	hit_angle.y = mode[mode_name][0]
-	print(hit_angle)
+	hit_angle.y = VBConst.mode[mode_name][0]
 	match state:
 		player_state.SPIKING:
 			if Input.is_action_pressed("move_forward"):
@@ -227,11 +213,11 @@ func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
 			continue
 		else:
 			b.reg_hitter(id)
-		b.linear_velocity = hit_angle * mode[mode_name][1]
+		b.linear_velocity = hit_angle * VBConst.mode[mode_name][1]
 	
 	if set_idle:
 		can_hit = false
-		await get_tree().create_timer(hit_cooldown).timeout
+		await get_tree().create_timer(VBConst.hit_cooldown).timeout
 		can_hit = true
 		set_state(player_state.IDLE)
 			

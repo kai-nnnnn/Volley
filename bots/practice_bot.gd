@@ -7,17 +7,12 @@ enum bot_mode {
 	SPIKER
 }
 
-@export var front_set_velocity := 8.5
-@export var spike_velocity := 14.0
-@export var jump_speed := 10.0
-@export var bot_gravity := Vector3(0.0, -30.0, 0.0)
-var g = abs(bot_gravity.y)
+var g = abs(VBConst.gravity.y)
 @onready var spike_height = $MeshInstance3D.get_aabb().size.y + $pivot/spike_area.position.y + $pivot/spike_area/CollisionShape3D.shape.size.y
-var jump_max_height = 0.5 * (jump_speed ** 2) / g 
+var jump_max_height = 0.5 * (VBConst.jump_speed ** 2) / g
 
 
 @onready var mode_num_to_word = {bot_mode.SETTER: "front_set", bot_mode.SPIKER: "spike"}
-@onready var mode = {"spike": [-0.4, spike_velocity], "front_set": [2.8, front_set_velocity]}
 
 @onready var ball_scene := preload("res://balls/ball.tscn")
 
@@ -34,7 +29,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	if not is_on_floor():
-		velocity += bot_gravity * delta
+		velocity += VBConst.gravity * delta
 
 	move_and_slide()
 
@@ -45,7 +40,7 @@ func ball_is_lower_than(body:Node3D, height:int):
 
 
 func set_bot(pos:Vector3, rot:Vector3, target_mode:int, bot_name:String):
-	print(pos, rot)
+	DebugPrint.dprint(debug, [pos, " ", rot])
 	global_position = pos
 	global_rotation = rot
 	active_mode = target_mode
@@ -66,7 +61,7 @@ func start(mode_name:String):
 		match mode_name:
 			"spike":
 				await ball_is_lower_than(ball, jump_max_height + spike_height)
-				velocity.y = jump_speed
+				velocity.y = VBConst.jump_speed
 				ball = await $pivot/spike_area.body_entered
 
 			"front_set":
@@ -77,8 +72,8 @@ func start(mode_name:String):
 			return
 
 		var hit_angle = -$pivot.global_transform.basis.z.normalized()
-		hit_angle.y = mode[mode_name][0]
+		hit_angle.y = VBConst.mode[mode_name][0]
 		hit_angle = hit_angle.normalized()
-		ball.linear_velocity = hit_angle * mode[mode_name][1]
+		ball.linear_velocity = hit_angle * VBConst.mode[mode_name][1]
 
 		await ball.ball_hit_ground	
