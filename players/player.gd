@@ -25,16 +25,16 @@ enum hand {
 @export var dive_decceleration := 45.0
 @export var jump_speed := 10.0
 @export var player_gravity := Vector3(0.0, -30.0, 0.0)
-@export var spike_velocity := 15.0
+@export var spike_velocity := 14.0
 @export var receive_velocity := 10.0
-@export var front_set_velocity := 8.0
+@export var front_set_velocity := 8.5
 @export var dive_velocity := 10.0
 
 @export var crush_delta := -0.15
 
 @onready var state := player_state.IDLE
-@onready var mode = {"spike": [-0.25, spike_velocity], "receive": [3.5, receive_velocity], \
-	"front_set": [3, front_set_velocity], "dive": [999, dive_velocity]}
+@onready var mode = {"spike": [-0.4, spike_velocity], "receive": [3.5, receive_velocity], \
+	"front_set": [2.8, front_set_velocity], "dive": [999, dive_velocity]}
 @onready var mode_name_to_state = {
 	"spike": player_state.SPIKING,
 	"receive": player_state.RECEIVING,
@@ -88,7 +88,8 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	$camera_pivot.rotation.y = cam.rotation.y
+	if is_on_floor():
+		$camera_pivot.rotation.y = cam.rotation.y
 	
 	match state:
 		player_state.SPIKING:
@@ -201,8 +202,9 @@ func perform_hit(bodies: Dictionary, mode_name: String, set_idle=true) -> void:
 	# set_state(mode_name_to_state[mode_name])
 
 	var id = get_instance_id()
-	var hit_angle = -cam.global_transform.basis.z.normalized()
+	var hit_angle = -$camera_pivot.global_transform.basis.z.normalized()
 	hit_angle.y = mode[mode_name][0]
+	print(hit_angle)
 	match state:
 		player_state.SPIKING:
 			if Input.is_action_pressed("move_forward"):

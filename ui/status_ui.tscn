@@ -4,6 +4,7 @@
 
 [sub_resource type="SystemFont" id="SystemFont_rcqc6"]
 font_names = PackedStringArray("Minecraft")
+subpixel_positioning = 0
 
 [node name="status_ui" type="Control"]
 layout_mode = 3

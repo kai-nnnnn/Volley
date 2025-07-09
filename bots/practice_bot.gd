@@ -7,8 +7,8 @@ enum bot_mode {
 	SPIKER
 }
 
-@export var front_set_velocity := 8.0
-@export var spike_velocity := 15.0
+@export var front_set_velocity := 8.5
+@export var spike_velocity := 14.0
 @export var jump_speed := 10.0
 @export var bot_gravity := Vector3(0.0, -30.0, 0.0)
 var g = abs(bot_gravity.y)
@@ -17,7 +17,7 @@ var jump_max_height = 0.5 * (jump_speed ** 2) / g
 
 
 @onready var mode_num_to_word = {bot_mode.SETTER: "front_set", bot_mode.SPIKER: "spike"}
-@onready var mode = {"spike": [-0.25, spike_velocity], "front_set": [3, front_set_velocity]}
+@onready var mode = {"spike": [-0.4, spike_velocity], "front_set": [2.8, front_set_velocity]}
 
 @onready var ball_scene := preload("res://balls/ball.tscn")
 
