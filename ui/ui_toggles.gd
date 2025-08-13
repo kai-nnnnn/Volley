@@ -1,21 +1,47 @@
-extends CanvasLayer
+extends Node
 
-# Called when the node enters the scene tree for the first time.
+var can_toggle := false
+
 func _ready() -> void:
-	for child_ui in get_children():
-		child_ui.visible = false
-	$status_ui.visible = true
+	can_toggle = false
+	_hide_bot()
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
+func enable_bot_toggle(flag: bool) -> void:
+	can_toggle = flag
+	if not flag:
+		_hide_bot()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not can_toggle:
+		return
 	if event.is_action_pressed("toggle_bot_ui"):
-		if $bot_ui.visible:
-			$bot_ui.visible = false
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-		else:
-			$bot_ui.visible = true
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		_toggle_bot()
+
+# --- 內部工具 ---
+func _toggle_bot() -> void:
+	var bot := _get_bot()
+	if bot == null:
+		return
+	if bot.visible:
+		_hide_bot()
+	else:
+		_show_bot()
+
+func _show_bot() -> void:
+	var bot = _get_bot()
+	if bot == null:
+		return
+	bot.visible = true
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	
+func _hide_bot() -> void:
+	var bot = _get_bot()
+	if bot == null:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		return
+	bot.visible = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
+func _get_bot() -> CanvasItem:
+	return get_tree().get_first_node_in_group("BotUI") as CanvasItem
